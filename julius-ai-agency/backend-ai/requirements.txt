@@ -7,3 +7,5 @@ uvicorn
 python-dotenv
 pydantic
 requests
+gunicorn
+fastapi-cors

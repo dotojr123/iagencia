@@ -15,9 +15,6 @@ class SupervisorAgent:
         Analyzes the task and returns the name of the sector that should handle it.
         Possible sectors: 'analysis', 'development', 'marketing'.
         """
-        # In a real implementation, we would use the LLM to decide.
-        # For this boilerplate, we'll do a simple keyword check or prompt the LLM.
-
         # Simple Mock Logic for v1
         task_lower = task_description.lower()
         if "analyze" in task_lower or "research" in task_lower or "report" in task_lower:

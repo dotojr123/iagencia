@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -8,6 +9,18 @@ venv/
 .env
 .DS_Store
 install.log
+backend.log
 coverage.xml
 *.coverage
 htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.next/
+out/
+.vercel/

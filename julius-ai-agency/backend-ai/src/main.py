@@ -1,39 +1,60 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.crews.analysis.analysis_crew import AnalysisCrew
 from src.agents.supervisor import SupervisorAgent
 import os
+import logging
+from dotenv import load_dotenv
 
-app = FastAPI(title="Jules AI Agency API", version="1.0.0")
+# Load environment variables
+load_dotenv()
+
+# Configure Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("JulesAPI")
+
+app = FastAPI(title="Jules AI Agency API", version="1.0.0", docs_url="/docs", redoc_url="/redoc")
+
+# CORS Configuration
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "*")
+origins = allowed_origins_env.split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class AgencyRequest(BaseModel):
     task: str
-    topic: str = None # Optional topic for specific crews
+    topic: str = None
 
 @app.get("/")
 def read_root():
-    return {"status": "online", "agency": "Jules v1.0"}
+    """Health check endpoint."""
+    return {"status": "online", "agency": "Jules v1.0", "version": "1.0.0"}
 
 @app.post("/agency/dispatch")
 def dispatch_task(request: AgencyRequest):
     """
     Main entry point for the Agency.
-    The Supervisor decides which crew to run based on the task description.
     """
+    logger.info(f"Received task: {request.task}")
     try:
         supervisor = SupervisorAgent()
-        # Decide sector
         sector = supervisor.route_task(request.task)
+        logger.info(f"Supervisor routed to sector: {sector}")
 
-        result = None
         if sector == "analysis":
-            # If topic is not provided, try to extract it from task (mock)
             topic = request.topic or request.task
             crew = AnalysisCrew()
             result = crew.run(topic)
             return {
                 "supervisor_decision": "Routed to Analysis Sector",
-                "crew_output": result
+                "crew_output": str(result)
             }
 
         elif sector == "development":
@@ -49,10 +70,9 @@ def dispatch_task(request: AgencyRequest):
             }
 
     except Exception as e:
-        # Log error in production
-        print(f"Error: {e}")
+        logger.error(f"Error executing task: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))

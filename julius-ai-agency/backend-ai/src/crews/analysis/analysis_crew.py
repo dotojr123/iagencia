@@ -1,11 +1,15 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+import os
 
 @CrewBase
 class AnalysisCrew:
     """Analysis Crew"""
-    agents_config = '../../config/agents.yaml'
-    tasks_config = '../../config/tasks.yaml'
+
+    # Use absolute paths relative to this file
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    agents_config = os.path.join(base_dir, '../../config/agents.yaml')
+    tasks_config = os.path.join(base_dir, '../../config/tasks.yaml')
 
     @agent
     def researcher(self) -> Agent:
@@ -54,13 +58,12 @@ class AnalysisCrew:
     @crew
     def crew(self) -> Crew:
         return Crew(
-            agents=self.agents, # Automatically collected by the @agent decorator
-            tasks=self.tasks,   # Automatically collected by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
         )
 
     def run(self, topic: str):
         inputs = {'topic': topic}
-        # The kickoff method in newer CrewAI versions takes inputs dict
         return self.crew().kickoff(inputs=inputs)
