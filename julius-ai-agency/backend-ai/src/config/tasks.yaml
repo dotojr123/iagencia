@@ -1,0 +1,30 @@
+market_research:
+  description: >
+    Conduct a deep dive research on the following topic: {topic}.
+    Identify key trends, major players, market size, and future outlook.
+    Use reliable sources and focus on the current year (2025) and near future.
+  expected_output: >
+    A comprehensive research summary containing key trends, market data, and major players.
+  agent: researcher
+
+data_analysis:
+  description: >
+    Analyze the research findings provided by the Researcher.
+    Identify the most significant patterns and statistical anomalies (if data is available).
+    Structure the information to highlight opportunities and risks.
+  expected_output: >
+    An analytical breakdown of the research, highlighting strengths, weaknesses, opportunities, and threats (SWOT).
+  agent: data_analyst
+
+strategic_report:
+  description: >
+    Create a final executive report based on the research and analysis.
+    The report should be formatted in Markdown.
+    It must include:
+    1. Executive Summary
+    2. Key Findings
+    3. Strategic Recommendations
+    4. Conclusion
+  expected_output: >
+    A professional, strategic report in Markdown format, ready for presentation to a client.
+  agent: insights_specialist
